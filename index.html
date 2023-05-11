@@ -33,26 +33,29 @@
                 <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">GO WITH RUBY</h1>
                 <p class="mt-6 text-lg leading-8 text-gray-300">This code verifies that the user is authenticated and authorized to place orders. It will also validate the request data, store the order in the database, dispatch jobs for background processing. With Hotwire, we get real time updates on the frontend without any additional work.</p>
               </div>
-              <pre><code class="language-ruby">
-  class OrdersController &lt; ApplicationController
-      before_action :authenticate_user!
+              <pre class="overflow-x-auto"><code class="language-ruby overflow-x-auto">
+class OrdersController &lt; ApplicationController
+  before_action :authenticate_user!
 
-      def create
-          order = current_user.orders.new(order_params)
-          if order.save
-              SendOrderToVendorJob.perform_later(order)
-              NewOrderPlacedJob.perform_later(order)
-          else
-              render :new
-          end
-      end
-
-      private
-
-      def order_params
-          params.require(:order).permit(:vendor_id, products: [:id, :quantity])
-      end
+  def create
+    order = current_user.orders.new(order_params)
+    if order.save
+      SendOrderToVendorJob.perform_later(order)
+      NewOrderPlacedJob.perform_later(order)
+    else
+      render :new
+    end
   end
+
+  private
+
+  def order_params
+    params.require(:order).permit(
+      :vendor_id,
+      products: [:id, :quantity]
+    )
+  end
+end
 </code></pre>
             </div>
           </div>
